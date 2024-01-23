@@ -8,45 +8,92 @@ from eralchemy2 import render_er
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'User'
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     username = Column(String(250), nullable=False)
-    lastname = Column(String(250), nullable=False)
+    password = Column(String(20), nullable=False)
     email = Column(String(250), nullable=False)
-    followers = relationship('Follower', back_populates='user_from')
+    favorites = Column(String(250))
 
-class Follower(Base):
-    __tablename__ = 'follower'
-    user_from_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    user_to_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    user_from = relationship('User', foreign_keys=[user_from_id], back_populates='followers')
-    user_to = relationship('User', foreign_keys=[user_to_id])
-    def to_dict(self):
-        return {}
+class People(Base):
+     __tablename__ = 'People'
+     character_id = Column(Integer, primary_key=True)
+     name = Column(String(250))
+     gender_id = Column(Integer, ForeignKey('Gender.gender_id'))
+     gender = relationship('Gender')
+     specie_id = Column(Integer, ForeignKey('Specie.specie_id'))
+     specie = relationship('Specie')
+     vehicle_id = Column(Integer, ForeignKey('Vehicle.vehicle_id'))
+     vehicle = relationship('Vehicle')
+     height = Column(Integer)
+     film_id = Column(Integer, ForeignKey('Film.film_id'))
+     film = relationship('Film')
+     planet_id = Column(Integer, ForeignKey('Planet.planet_id'))
+     planet = relationship('Planet')
 
-class Comment(Base):
-    __tablename__ = 'comment'
+class Film(Base):
+     __tablename__ = 'Film'
+     film_id = Column(Integer, primary_key=True)
+     director_id = Column(Integer, ForeignKey('Director.directo_id'))
+     title = Column(String(250))
+     opening = Column(String(250))
+     director = relationship('Director')
+
+class Starship(Base):
+     __tablename__ = 'Starship'
+     starship_id = Column(Integer, primary_key=True)
+     name = Column(String(250))
+     pilot_id = Column(Integer, ForeignKey('People.character_id'))
+     pilot = relationship('People')
+
+class Vehicle(Base):
+     __tablename__ = 'Vehicle'
+     vehicle_id = Column(Integer, primary_key=True)
+     name = Column(String(250))
+     model = Column(String(250))
+
+class Gender(Base):
+     __tablename__ = 'Gender'
+     gender_id = Column(Integer, primary_key=True)
+     type = Column(String(250))
+
+class Specie(Base):
+     __tablename__ = 'Specie'
+     specie_id = Column(Integer, primary_key=True)
+     languaje = Column(String(250))
+
+class Planet(Base):
+    __tablename__ = 'Planet'
+    planet_id = Column(Integer, primary_key=True)
+    name = Column(String(250))
+    population = Column(Integer)
+    terrain = Column(Integer)
+    diameter = Column(Integer)
+
+class Director(Base):
+     __tablename__ = 'Director'
+     directo_id = Column(Integer, primary_key=True)
+     name = Column(String(250))
+
+class Favorite(Base):
+    __tablename__ = 'Favorite'
     id = Column(Integer, primary_key=True)
-    comment = Column(String(250), nullable=False)
-    author_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
-
-class Post(Base):
-    __tablename__ = 'post'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    user = relationship('User', back_populates='posts')
-    media = relationship('Media', back_populates='post')
-
-class Media(Base):
-    __tablename__ = 'media'
-    id = Column(Integer, primary_key=True)
-    type = Column(String(250), nullable=False)
-    url = Column(String(250), nullable=False)
-    post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
-    post = relationship('Post', back_populates='media')
+    user_id = Column(Integer, ForeignKey('User.id'))
+    user = relationship('User')
+    planet_id = Column(Integer, ForeignKey('Planet.planet_id'))
+    planet = relationship('Planet')
+    film_id = Column(Integer, ForeignKey('Film.film_id'))
+    film = relationship('Film')
 
 
-## Draw from SQLAlchemy base
-render_er(Base, 'diagram.png')
+def to_dict(self):
+    return {}
+
+## Draw from sqlalchemy base
+try:
+    result = render_er(Base, 'diagram.png')
+    print("Success! Check the diagram.png file")
+except Exception as e:
+    print("There was a problem generating the diagram")
+    raise e
