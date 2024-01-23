@@ -12,6 +12,8 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     username = Column(String(250), nullable=False)
+    lastname = Column(String(250), nullable=False)
+    suscription_dates = Column(String(250), nullable=False)
     password = Column(String(20), nullable=False)
     email = Column(String(250), nullable=False)
     favorites = Column(String(250))
